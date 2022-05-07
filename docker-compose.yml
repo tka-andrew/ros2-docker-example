@@ -1,0 +1,35 @@
+# REFERENCE: https://answers.ros.org/question/300113/docker-how-to-use-rviz-and-gazebo-from-a-container/
+# REFERENCE: https://stackoverflow.com/questions/36249744/interactive-shell-using-docker-compose
+
+version: '3.3'
+
+services:
+  turtlesim:
+    container_name: turtlesim_node
+    image: osrf/ros:foxy-desktop
+    environment:
+      - DISPLAY=$DISPLAY
+      - XAUTHORITY=$XAUTH
+    volumes:
+      - $XSOCK:$XSOCK
+      - $XAUTH:$XAUTH
+    command: ros2 run turtlesim turtlesim_node
+    env_file:
+      - .env
+
+  turtle_teleop:
+    container_name: turtle_teleop
+    image: osrf/ros:foxy-desktop
+    stdin_open: "true" # docker run -i
+    tty: "true" # docker run -t
+    environment:
+      - DISPLAY=$DISPLAY
+      - XAUTHORITY=$XAUTH
+    volumes:
+      - $XSOCK:$XSOCK
+      - $XAUTH:$XAUTH
+    command: ros2 run turtlesim turtle_teleop_key
+    env_file:
+      - .env
+    depends_on:
+      - turtlesim
